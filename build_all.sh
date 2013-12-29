@@ -1,5 +1,10 @@
 #!/bin/bash
 
+[ -e /.dockerenv ] || {
+    echo "not running in a Docker container!"
+    exit 1
+}
+
 set -e
 set -x
 
