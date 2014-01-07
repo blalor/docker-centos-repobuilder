@@ -1,0 +1,7 @@
+function pkg_exists_in_repo() {
+    if repoquery --disablerepo='*' --repofrompath=dockerized,file://${PWD} --enablerepo=dockerized --all --nvr | grep "$1"; then
+        return 0
+    else
+        return 1
+    fi
+}
