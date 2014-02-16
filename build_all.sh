@@ -31,7 +31,7 @@ createrepo ${rpmsdir}
 
 cd ${rpmsdir}
 
-for builder in /scripts/builders/*.sh; do
+for builder in $( ls /scripts/builders/*.sh | sort ); do
     ${builder}
 done
 
