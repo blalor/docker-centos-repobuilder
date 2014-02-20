@@ -18,5 +18,6 @@ docker run \
     -e AWS_SECRET_KEY \
     -e BUCKET \
     -e REPO \
+    -i -t \
     blalor/centos-buildtools:latest \
     /scripts/build_all.sh
