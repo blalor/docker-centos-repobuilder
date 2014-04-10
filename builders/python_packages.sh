@@ -15,9 +15,9 @@ pkg_exists_in_repo python-supervisor-3.0 || fpm -s python -t rpm -v 3.0 supervis
 ## pip requires setuptools, available in base repo
 pkg_exists_in_repo python-pip-1.4.1 || fpm -s python -t rpm -v 1.4.1 pip
 
-pkg_exists_in_repo python-twisted-11.1.0       || fpm -s python -t rpm Twisted==11.1.0
-pkg_exists_in_repo python-zope.interface-4.0.5 || fpm -s python -t rpm -v 4.0.5 zope.interface
-pkg_exists_in_repo python-txamqp-0.6.2         || fpm -s python -t rpm -v 0.6.2 txamqp
+pkg_exists_in_repo python-twisted-11.1.0       || fpm -s python -t rpm -v 11.1.0 Twisted
+pkg_exists_in_repo python-zope.interface-4.0.5 || fpm -s python -t rpm -v 4.0.5  zope.interface
+pkg_exists_in_repo python-txamqp-0.6.2         || fpm -s python -t rpm -v 0.6.2  txamqp
 
 ## --provides required by python-django-tagging, and for compatibility with
 ## python-Django package in EPEL
@@ -29,7 +29,21 @@ pkg_exists_in_repo python-whisper-${graphite_ver}      || fpm -s python -t rpm -
 pkg_exists_in_repo python-graphite-web-${graphite_ver} || fpm -s python -t rpm -v ${graphite_ver} graphite-web
 
 ## my docker-sync stuff
-pkg_exists_in_repo python-docker-sync-1.0.2       || fpm -s python -t rpm -v 1.0.2  docker-sync
-pkg_exists_in_repo python-pyyaml-3.11             || fpm -s python -t rpm -v 3.11   PyYAML
+## deps are a bit fucked up; epel provides PyYAML-3.10 and fpm doesn't have an
+## option to remove an item from the list of automatic dependencies
+pkg_exists_in_repo python-docker-sync-1.0.2 || \
+    fpm -s python \
+        -t rpm \
+        --no-auto-depends \
+        -d 'PyYAML >= 3.10' \
+        -d 'PyYAML < 4.0' \
+        -d 'python-argparse >= 1.1' \
+        -d 'python-docker-py >= 0.3.0' \
+        -d 'python-docker-py < 0.4.0' \
+        -d 'python-setuptools' \
+        -v 1.0.2 \
+        docker-sync
+
 pkg_exists_in_repo python-docker-py-0.3.1         || fpm -s python -t rpm -v 0.3.1  docker-py
 pkg_exists_in_repo python-websocket-client-0.11.0 || fpm -s python -t rpm -v 0.11.0 websocket-client
+pkg_exists_in_repo python-requests-2.2.1          || fpm -s python -t rpm -v 2.2.1  requests
