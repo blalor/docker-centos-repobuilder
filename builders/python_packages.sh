@@ -27,3 +27,9 @@ graphite_ver="0.9.12"
 pkg_exists_in_repo python-carbon-${graphite_ver}       || fpm -s python -t rpm -v ${graphite_ver} carbon
 pkg_exists_in_repo python-whisper-${graphite_ver}      || fpm -s python -t rpm -v ${graphite_ver} whisper
 pkg_exists_in_repo python-graphite-web-${graphite_ver} || fpm -s python -t rpm -v ${graphite_ver} graphite-web
+
+## my docker-sync stuff
+pkg_exists_in_repo python-docker-sync-1.0.2       || fpm -s python -t rpm -v 1.0.2  docker-sync
+pkg_exists_in_repo python-pyyaml-3.11             || fpm -s python -t rpm -v 3.11   PyYAML
+pkg_exists_in_repo python-docker-py-0.3.1         || fpm -s python -t rpm -v 0.3.1  docker-py
+pkg_exists_in_repo python-websocket-client-0.11.0 || fpm -s python -t rpm -v 0.11.0 websocket-client
