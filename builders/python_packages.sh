@@ -31,7 +31,8 @@ pkg_exists_in_repo python-graphite-web-${graphite_ver} || fpm -s python -t rpm -
 ## my docker-sync stuff
 ## deps are a bit fucked up; epel provides PyYAML-3.10 and fpm doesn't have an
 ## option to remove an item from the list of automatic dependencies
-pkg_exists_in_repo python-docker-sync-1.0.2 || \
+docker_sync_ver="1.0.3"
+pkg_exists_in_repo python-docker-sync-${docker_sync_ver} || \
     fpm -s python \
         -t rpm \
         --no-auto-depends \
@@ -41,7 +42,7 @@ pkg_exists_in_repo python-docker-sync-1.0.2 || \
         -d 'python-docker-py >= 0.3.0' \
         -d 'python-docker-py < 0.4.0' \
         -d 'python-setuptools' \
-        -v 1.0.2 \
+        -v ${docker_sync_ver} \
         docker-sync
 
 pkg_exists_in_repo python-docker-py-0.3.1         || fpm -s python -t rpm -v 0.3.1  docker-py
