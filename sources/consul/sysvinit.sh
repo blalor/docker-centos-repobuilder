@@ -69,9 +69,14 @@ start() {
 
 stop() {
     echo -n $"Shutting down $prog: "
-    ## graceful shutdown with SIGINT
-    killproc -p $pidfile $exec -INT
+    
+    ## graceful shutdown with leave
+    $exec leave &> /dev/null
+    
     RETVAL=$?
+    
+    [ $RETVAL -eq 0 ] && success || failure
+
     echo
     [ $RETVAL -eq 0 ] && rm -f $lockfile $pidfile
     return $RETVAL
