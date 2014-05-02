@@ -1,7 +1,12 @@
 #!/bin/bash
 
+_basedir=$( cd -P "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )
+
+SOURCES="${_basedir}/sources"
+RPMS="${_basedir}/rpms"
+
 function pkg_exists_in_repo() {
-    if repoquery --disablerepo='*' --repofrompath=dockerized,file://${PWD} --enablerepo=dockerized --all --nvr | grep "$1"; then
+    if repoquery --disablerepo='*' --repofrompath=dockerized,file://${RPMS} --enablerepo=dockerized --all --nvr | grep "$1"; then
         return 0
     else
         return 1

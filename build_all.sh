@@ -16,7 +16,7 @@ sed \
 
 set -x
 
-basedir="$( dirname $0 )"
+basedir=$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 rpmsdir="/rpms"
 
 yum -y install s3cmd yum-utils
