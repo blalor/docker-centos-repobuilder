@@ -7,7 +7,7 @@
 
 set -e
 
-basedir=$( cd $( dirname $0 ) && /bin/pwd )
+basedir=$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 [ -d ${basedir}/rpms ] || mkdir -p ${basedir}/rpms
 
