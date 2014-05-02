@@ -19,8 +19,6 @@ set -x
 basedir=$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 rpmsdir="/rpms"
 
-yum -y install s3cmd yum-utils
-
 ## pull from S3
 s3cmd -c /tmp/s3.cfg \
     sync \
