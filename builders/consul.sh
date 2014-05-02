@@ -26,7 +26,9 @@ else
     ## create required directories
     mkdir -p usr/bin etc/consul.d var/lib/consul etc/rc.d/init.d
     
-    chmod 550 etc/consul.d var/lib/consul
+    ## set dir perms
+    chmod 550 etc/consul.d
+    chmod 750 var/lib/consul
     
     ## unpack
     unzip ${PKG_ARCHIVE}
