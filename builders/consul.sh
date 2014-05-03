@@ -10,13 +10,14 @@ tmpdir=$( mktemp -d )
 
 PKG_NAME="consul"
 PKG_VER="0.2.0"
+PKG_ITER="2"
 PKG_ARCHIVE="${PKG_VER}_linux_amd64.zip"
 PKG_URL_BASE="https://dl.bintray.com/mitchellh/consul"
 
 SOURCES_DIR="${SOURCES}/${PKG_NAME}"
 
-if pkg_exists_in_repo ${PKG_NAME}-${PKG_VER}; then
-    echo "${PKG_NAME}-${PKG_VER} already built"
+if pkg_exists_in_repo ${PKG_NAME}-${PKG_VER}-${PKG_ITER}; then
+    echo "${PKG_NAME}-${PKG_VER}-${PKG_ITER} already built"
 else
     pushd ${tmpdir}
     
@@ -48,6 +49,7 @@ else
         -t rpm \
         -n ${PKG_NAME} \
         -v ${PKG_VER} \
+        --iteration ${PKG_ITER} \
         --before-install "${SOURCES_DIR}/before-install.sh" \
         --rpm-user consul \
         --rpm-group consul \
