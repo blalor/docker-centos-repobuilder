@@ -99,6 +99,12 @@ force_reload() {
 
 rh_status() {
     status -p "$pidfile" -l $prog $exec
+    
+    RETVAL=$?
+    
+    [ $RETVAL -eq 0 ] && $exec members
+    
+    return $RETVAL
 }
 
 rh_status_q() {
