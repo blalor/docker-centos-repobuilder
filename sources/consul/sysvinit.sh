@@ -65,7 +65,7 @@ start() {
     
     [ $RETVAL -eq 0 ] && touch $lockfile
     
-    if [ -e $membersfile ]; then
+    if [ -s $membersfile ]; then
         echo -n $"Re-joining cluster: "
         
         ## allow time to launch
