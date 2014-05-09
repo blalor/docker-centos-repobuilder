@@ -34,8 +34,8 @@ else
     ## update spec for current version
     sed -i -e "s#^Version:.*#Version: ${VER}#" ${spec_file}
     
-    ## kludgy way to install required dev dependencies; probably a better way
-    rpmbuild -D "_topdir ${topdir}" --bb ${spec_file} |& grep 'is needed' | awk '{print $1}' | xargs yum install -y
+    ## install required dev dependencies
+    yum-builddep -y ${spec_file}
     
     ## now actually build it
     rpmbuild -D "_topdir ${topdir}" --bb ${spec_file}
