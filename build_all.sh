@@ -7,6 +7,9 @@
 
 set -e
 
+## need to fix the buildtools image
+yum install -y rpmdevtools
+
 ## very old version of s3cmd in epel. :-(
 sed \
     -e "s#\$AWS_ACCESS_KEY#${AWS_ACCESS_KEY}#" \
