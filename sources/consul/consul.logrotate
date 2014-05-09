@@ -1,0 +1,9 @@
+/var/log/consul {
+    daily
+    rotate 10
+    copytruncate
+    delaycompress
+    compress
+    notifempty
+    missingok
+}

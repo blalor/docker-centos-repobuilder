@@ -10,7 +10,7 @@ tmpdir=$( mktemp -d )
 
 PKG_NAME="consul"
 PKG_VER="0.2.0"
-PKG_ITER="3"
+PKG_ITER="4"
 PKG_ARCHIVE="${PKG_VER}_linux_amd64.zip"
 PKG_URL_BASE="https://dl.bintray.com/mitchellh/consul"
 
@@ -25,7 +25,7 @@ else
     curl --remote-name-all --location ${PKG_URL_BASE}/${PKG_ARCHIVE}
     
     ## create required directories
-    mkdir -p usr/bin etc/consul.d var/lib/consul etc/rc.d/init.d
+    mkdir -p usr/bin etc/consul.d var/lib/consul etc/rc.d/init.d etc/logrotate.d
     
     ## set dir perms
     chmod 550 etc/consul.d
@@ -38,6 +38,7 @@ else
 
     ## config file
     cp "${SOURCES_DIR}/consul.conf" etc/consul.conf
+    cp "${SOURCES_DIR}/consul.logrotate" etc/logrotate.d/consul
     
     ## init script
     cp "${SOURCES_DIR}/sysvinit.sh" etc/rc.d/init.d/consul
