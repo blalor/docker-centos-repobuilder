@@ -6,7 +6,7 @@ set -x
 . $( dirname $0 )/common
 
 tmpdir=$( mktemp -d )
-# trap "echo removing ${tmpdir}; rm -rf ${tmpdir}" EXIT
+trap "echo removing ${tmpdir}; rm -rf ${tmpdir}" EXIT
 
 PKG_NAME="consul"
 PKG_VER="0.2.0"

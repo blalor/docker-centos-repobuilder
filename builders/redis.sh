@@ -6,7 +6,7 @@ set -x
 . $( dirname $0 )/common
 
 tmpdir=$( mktemp -d )
-# trap "echo removing ${tmpdir}; rm -rf ${tmpdir}" EXIT
+trap "echo removing ${tmpdir}; rm -rf ${tmpdir}" EXIT
 
 PKG_NAME="redis"
 SOURCES_DIR="${SOURCES}/${PKG_NAME}"
