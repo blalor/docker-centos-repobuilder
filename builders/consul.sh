@@ -9,9 +9,10 @@ tmpdir=$( mktemp -d )
 trap "echo removing ${tmpdir}; rm -rf ${tmpdir}" EXIT
 
 PKG_NAME="consul"
-PKG_VER="0.2.0"
-PKG_ITER="4"
+PKG_VER="0.2.1"
+PKG_ITER="1"
 PKG_ARCHIVE="${PKG_VER}_linux_amd64.zip"
+PKG_ARCHIVE_UI="${PKG_VER}_web_ui.zip"
 PKG_URL_BASE="https://dl.bintray.com/mitchellh/consul"
 
 SOURCES_DIR="${SOURCES}/${PKG_NAME}"
@@ -22,10 +23,10 @@ else
     pushd ${tmpdir}
     
     ## retrieve archive
-    curl --remote-name-all --location ${PKG_URL_BASE}/${PKG_ARCHIVE}
+    curl --remote-name-all --location ${PKG_URL_BASE}/${PKG_ARCHIVE} ${PKG_URL_BASE}/${PKG_ARCHIVE_UI}
     
     ## create required directories
-    mkdir -p usr/bin etc/consul.d var/lib/consul etc/rc.d/init.d etc/logrotate.d
+    mkdir -p usr/bin etc/consul.d var/lib/consul etc/rc.d/init.d etc/logrotate.d usr/share/consul
     
     ## set dir perms
     chmod 550 etc/consul.d
@@ -35,6 +36,9 @@ else
     unzip ${PKG_ARCHIVE}
     mv consul usr/bin/consul
     chmod 555 usr/bin/consul
+    
+    unzip ${PKG_ARCHIVE_UI}
+    mv dist usr/share/consul/ui
 
     ## config file
     cp "${SOURCES_DIR}/consul.conf" etc/consul.conf
