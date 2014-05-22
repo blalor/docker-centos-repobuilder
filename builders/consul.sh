@@ -10,7 +10,7 @@ trap "echo removing ${tmpdir}; rm -rf ${tmpdir}" EXIT
 
 PKG_NAME="consul"
 PKG_VER="0.2.1"
-PKG_ITER="1"
+PKG_ITER="2"
 PKG_ARCHIVE="${PKG_VER}_linux_amd64.zip"
 PKG_ARCHIVE_UI="${PKG_VER}_web_ui.zip"
 PKG_URL_BASE="https://dl.bintray.com/mitchellh/consul"

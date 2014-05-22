@@ -53,8 +53,10 @@ start() {
     
     ## holy shell shenanigans, batman!
     ## daemon can't be backgrounded.  we need the pid of the spawned process,
-    ## which is actually done via runuser thanks to --user.  you can't do "cmd
-    ## &; action" but you can do "{cmd &}; action".
+    ## which is actually done via runuser thanks to --user.
+    ## you can't do "cmd &; action" but you can do "{cmd &}; action".
+    ## consul 0.2.1 added -pid-file; although the following creates $pidfile
+    ## owned by consul:consul, using -pid-file results in a permission error.
     daemon \
         --pidfile=$pidfile \
         --user=consul \
@@ -65,27 +67,47 @@ start() {
     
     [ $RETVAL -eq 0 ] && touch $lockfile
     
-    if [ -s $membersfile ]; then
-        echo -n $"Re-joining cluster: "
+    echo -n $"waiting for ready"
+    
+    ## wait up to 60s for the rpc port to become listened-upon
+    ## consul 0.2.1 got much slower to start!
+    count=0
+    ready=0
+    pid=$( cat ${pidfile} )
+    while [ $count -lt 60 ] && [ $ready -ne 1 ]; do
+        count=$(( count + 1 ))
         
-        ## allow time to launch
-        sleep 5
-        
-        ## I think I want to iterate through every entry in $membersfile and
-        ## return success if any are successfully joined…
-        cat $membersfile | xargs $exec join &>> /dev/null
-        
-        RETVAL=$?
-        
-        if [ $RETVAL -eq 0 ]; then
-            success
-
-            rm -f $membersfile
+        if netstat -lptn | egrep -q ":8400.*LISTEN +${pid}/consul" ; then
+            ready=1
         else
-            failure
+            sleep 1
         fi
+    done
+    
+    if [ $ready -eq 1 ]; then
+        RETVAL=0
+        success
         
-        echo
+        if [ -s $membersfile ]; then
+            echo -n $"Re-joining cluster: "
+            
+            cat $membersfile | xargs $exec join &>> /dev/null
+            
+            RETVAL=$?
+            
+            if [ $RETVAL -eq 0 ]; then
+                success
+
+                rm -f $membersfile
+            else
+                failure
+            fi
+            
+            echo
+        fi
+    else
+        RETVAL=1
+        failure
     fi
     
     return $RETVAL
