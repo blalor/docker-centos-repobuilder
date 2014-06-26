@@ -9,7 +9,7 @@ tmpdir=$( mktemp -d )
 trap "echo removing ${tmpdir}; rm -rf ${tmpdir}" EXIT
 
 PKG_NAME="canaryio-canaryd"
-PKG_VER="626e025"
+PKG_VER="d6050e4"
 PKG_ITER="1"
 
 if pkg_exists_in_repo ${PKG_NAME}-${PKG_VER}-${PKG_ITER}; then
