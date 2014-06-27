@@ -10,7 +10,7 @@ trap "echo removing ${tmpdir}; rm -rf ${tmpdir}" EXIT
 
 PKG_NAME="canaryio-sensord"
 PKG_VER="0a4ceae"
-PKG_ITER="1"
+PKG_ITER="2"
 
 if pkg_exists_in_repo ${PKG_NAME}-${PKG_VER}-${PKG_ITER}; then
     echo "${PKG_NAME}-${PKG_VER}-${PKG_ITER} already built"
@@ -23,7 +23,33 @@ else
     export PATH=${GOPATH}/bin:${PATH}
     
     ## need go, and fucking mercurial
-    yum install -y golang mercurial libcurl-devel
+    yum install -y golang mercurial
+
+    ## oh for fuck's sake
+    ## https://github.com/canaryio/sensord/issues/57
+    ## https://github.com/canaryio/sensord/issues/67
+    ## building newer libcurl
+    if [ ! -e /opt/canary/bin/curl ]; then
+        ## yay iterative development!
+        
+        curl -O -L http://curl.haxx.se/download/curl-7.37.0.tar.gz
+        tar -xzf curl-7.37.0.tar.gz
+        
+        pushd curl-7.37.0
+        
+        ./configure --prefix=/opt/canary
+        make install
+        
+        popd
+    fi
+        
+    ## copy curl libs into our package root
+    tar -cf - -C /opt/canary lib | tar -x -C opt/canary
+    
+    export PKG_CONFIG_PATH=/opt/canary/lib/pkgconfig:/usr/lib64/pkgconfig
+    
+    ## ensure curl is picked up by the compiled binary
+    export CGO_LDFLAGS="-Wl,-rpath,/opt/canary/lib"
 
     ## godep required to build this package
     go get -v github.com/tools/godep
@@ -51,7 +77,6 @@ else
         -t rpm \
         -n ${PKG_NAME} \
         -v ${PKG_VER} \
-        --depends libcurl \
         --epoch ${PKG_EPOCH} \
         --iteration ${PKG_ITER} \
         --rpm-use-file-permissions \
