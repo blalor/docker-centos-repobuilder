@@ -10,7 +10,7 @@ trap "echo removing ${tmpdir}; rm -rf ${tmpdir}" EXIT
 
 PKG_NAME="canaryio-sensord"
 PKG_VER="0a4ceae"
-PKG_ITER="2"
+PKG_ITER="3"
 
 if pkg_exists_in_repo ${PKG_NAME}-${PKG_VER}-${PKG_ITER}; then
     echo "${PKG_NAME}-${PKG_VER}-${PKG_ITER} already built"
@@ -23,7 +23,8 @@ else
     export PATH=${GOPATH}/bin:${PATH}
     
     ## need go, and fucking mercurial
-    yum install -y golang mercurial
+    ## openssl-devel required to build with https support (I think?)
+    yum install -y golang mercurial openssl-devel
 
     ## oh for fuck's sake
     ## https://github.com/canaryio/sensord/issues/57
