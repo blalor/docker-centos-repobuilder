@@ -36,7 +36,7 @@ else
     ## since we're using a non-released version of the source and the git has as
     ## the version number, we need an epoch to differentiate old versions from
     ## new.
-    PKG_EPOCH=$( git show ${PKG_VER} --format=format:'%ct' )
+    PKG_EPOCH=$( git log --format=format:'%ct' --max-count=1 ${PKG_VER} )
 
     godep get
     godep go build -v
