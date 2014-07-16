@@ -8,24 +8,37 @@ set -x
 tmpdir=$( mktemp -d )
 trap "echo removing ${tmpdir}; rm -rf ${tmpdir}" EXIT
 
-PKG="logstash-forwarder"
-VER="0.3.1"
+PKG_NAME="logstash-forwarder"
+PKG_VER="69142e7"
 
-if pkg_exists_in_repo "${PKG}-${VER}"; then
-    echo "${PKG}-${VER} already built"
+if pkg_exists_in_repo ${PKG_NAME}-${PKG_VER}; then
+    echo "${PKG_NAME}-${PKG_VER} already built"
 else
     destdir=${PWD}
     
     git clone https://github.com/elasticsearch/logstash-forwarder.git ${tmpdir}
     pushd ${tmpdir}
     
-    git checkout d2ba8895471252c2e3c12abd1a3a72f2fcbdb4bd
+    git checkout ${PKG_VER}
     
-    yum install -y golang
+    ## https://github.com/elasticsearch/logstash-forwarder/issues/226
+    yum install -y golang-1.2.2
     
-    make rpm
+    ## doesn't set the epoch; necessary when using a non-semantic version
+    # make VERSION=${PKG_VER} rpm
+    make build-all
     
-    mv "${PKG}-${VER}-1.x86_64.rpm" ${destdir}/
+    fpm -s dir -t rpm -n logstash-forwarder -v ${PKG_VER} \
+        --epoch $( git log --format=format:'%ct' --max-count=1 ${PKG_VER} ) \
+        --replaces lumberjack \
+        --exclude '*.a' --exclude 'lib/pkgconfig/zlib.pc' \
+        --description "a log shipping tool" \
+        --url "https://github.com/elasticsearch/logstash-forwarder" \
+        build/bin/logstash-forwarder=/opt/logstash-forwarder/bin/ \
+        build/bin/logstash-forwarder.sh=/opt/logstash-forwarder/bin/ \
+        logstash-forwarder.init=/etc/init.d/logstash-forwarder
+    
+    mv "${PKG_NAME}-${PKG_VER}-1.x86_64.rpm" ${destdir}/
     
     popd
 fi
