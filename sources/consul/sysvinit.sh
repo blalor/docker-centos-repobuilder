@@ -31,7 +31,6 @@ lockfile="/var/lock/subsys/$prog"
 logfile="/var/log/$prog"
 conffile="/etc/consul.conf"
 confdir="/etc/consul.d"
-membersfile="/var/lib/consul/server_members"
 
 # pull in sysconfig settings
 [ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
@@ -87,42 +86,18 @@ start() {
     if [ $ready -eq 1 ]; then
         RETVAL=0
         success
-        
-        if [ -s $membersfile ]; then
-            echo -n $"Re-joining cluster: "
-            
-            cat $membersfile | xargs $exec join &>> /dev/null
-            
-            RETVAL=$?
-            
-            if [ $RETVAL -eq 0 ]; then
-                success
-
-                rm -f $membersfile
-            else
-                failure
-            fi
-            
-            echo
-        fi
     else
         RETVAL=1
         failure
     fi
     
+    echo    
     return $RETVAL
 }
 
 stop() {
     echo -n $"Shutting down $prog: "
     
-    ## store current server members so we can re-join later. exclude ourselves.
-    our_ip=$( ip addr show dev eth0 | awk '/inet / { split($2, cidr, "/"); print cidr[1]; }' )
-    consul members -status=alive -role=consul \
-        | awk '{ split($2, addr, ":"); print addr[1] }' \
-        | fgrep -v $our_ip \
-        > $membersfile
-        
     ## graceful shutdown with leave
     $exec leave &> /dev/null
     

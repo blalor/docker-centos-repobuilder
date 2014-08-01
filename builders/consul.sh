@@ -9,7 +9,7 @@ tmpdir=$( mktemp -d )
 trap "echo removing ${tmpdir}; rm -rf ${tmpdir}" EXIT
 
 PKG_NAME="consul"
-PKG_VER="0.3.0"
+PKG_VER="0.3.1"
 PKG_ITER="1"
 PKG_ARCHIVE="${PKG_VER}_linux_amd64.zip"
 PKG_ARCHIVE_UI="${PKG_VER}_web_ui.zip"
