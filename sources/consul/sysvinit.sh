@@ -100,13 +100,36 @@ stop() {
     
     ## graceful shutdown with leave
     $exec leave &> /dev/null
-    
     RETVAL=$?
     
-    [ $RETVAL -eq 0 ] && success || failure
+    ## wait up to 10s for the daemon to exit
+    if [ $RETVAL -eq 0 ]; then
+        count=0
+        stopped=0
+        pid=$( cat ${pidfile} )
+        while [ $count -lt 10 ] && [ $stopped -ne 1 ]; do
+            count=$(( count + 1 ))
+            
+            if ! checkpid ${pid} ; then
+                stopped=1
+            else
+                sleep 1
+            fi
+        done
+        
+        if [ $stopped -ne 1 ]; then
+            RETVAL=125
+        fi
+    fi
+    
+    if [ $RETVAL -eq 0 ]; then
+        success
+        rm -f $lockfile $pidfile
+    else
+        failure
+    fi
 
     echo
-    [ $RETVAL -eq 0 ] && rm -f $lockfile $pidfile
     return $RETVAL
 }
 
