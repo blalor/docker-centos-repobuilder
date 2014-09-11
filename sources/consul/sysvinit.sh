@@ -76,7 +76,7 @@ start() {
     while checkpid ${pid} && [ $count -lt 60 ] && [ $ready -ne 1 ]; do
         count=$(( count + 1 ))
         
-        if netstat -lptn | egrep -q ":8400.*LISTEN +${pid}/consul" ; then
+        if netstat -lptn | egrep -q ":8400.*LISTEN +${pid}/" ; then
             ready=1
         else
             sleep 1
