@@ -66,7 +66,7 @@ start() {
     
     [ $RETVAL -eq 0 ] && touch $lockfile
     
-    echo -n $"waiting for ready"
+    echo -n $"Waiting for Consul ready: "
     
     ## wait up to 60s for the rpc port to become listened-upon
     ## consul 0.2.1 got much slower to start!
