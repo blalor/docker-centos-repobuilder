@@ -73,7 +73,7 @@ start() {
     count=0
     ready=0
     pid=$( cat ${pidfile} )
-    while [ $count -lt 60 ] && [ $ready -ne 1 ]; do
+    while checkpid ${pid} && [ $count -lt 60 ] && [ $ready -ne 1 ]; do
         count=$(( count + 1 ))
         
         if netstat -lptn | egrep -q ":8400.*LISTEN +${pid}/consul" ; then
