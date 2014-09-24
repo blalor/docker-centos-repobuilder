@@ -14,3 +14,10 @@ exists in your S3 bucket will be nuked.
     
     ./build_in_docker.sh
 
+## running without S3 syncing
+
+Just don't set the above variables.
+
+## running a single builder
+
+    ./build_in_docker.sh /scripts/builders/<builder_script>.sh
