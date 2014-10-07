@@ -9,7 +9,7 @@ tmpdir=$( mktemp -d )
 trap "echo removing ${tmpdir}; rm -rf ${tmpdir}" EXIT
 
 PKG_NAME="riemann-consul-receiver"
-PKG_VER="1.1.0"
+PKG_VER="1.1.1"
 PKG_ITER="1"
 
 if pkg_exists_in_repo ${PKG_NAME}-${PKG_VER}-${PKG_ITER}; then
