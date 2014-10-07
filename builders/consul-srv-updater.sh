@@ -9,7 +9,7 @@ tmpdir=$( mktemp -d )
 trap "echo removing ${tmpdir}; rm -rf ${tmpdir}" EXIT
 
 PKG_NAME="consul-srv-updater"
-PKG_VER="1.0.1"
+PKG_VER="1.0.2"
 PKG_ITER="1"
 
 if pkg_exists_in_repo ${PKG_NAME}-${PKG_VER}-${PKG_ITER}; then
