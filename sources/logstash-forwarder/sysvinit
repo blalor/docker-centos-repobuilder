@@ -1,0 +1,148 @@
+#!/bin/bash
+#
+# logstash-forwarder        Forward logs to LogStash
+#       
+# chkconfig:   2345 95 95
+# description: Forward logs to LogStash
+# processname: logstash-forwarder
+# config: /etc/sysconfig/logstash-forwarder
+# config: /etc/logstash-forwarder.json
+# pidfile: /var/run/logstash-forwarder.pid
+
+### BEGIN INIT INFO
+# Provides:       logstash-forwarder
+# Required-Start: $local_fs $network
+# Required-Stop:
+# Should-Start:
+# Should-Stop:
+# Default-Start: 2 3 4 5
+# Default-Stop:  0 1 6
+# Short-Description: Forward logs to LogStash
+# Description: Forward logs to LogStash
+### END INIT INFO
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+prog="logstash-forwarder"
+exec="/usr/bin/${prog}"
+pidfile="/var/run/${prog}.pid"
+lockfile="/var/lock/subsys/${prog}"
+logfile="/var/log/${prog}"
+conffile="/etc/${prog}.json"
+
+## determine if we have a sane 'daemon' function; < 8.45.31 doesn't pass
+## environment vars. wtf?!
+initscripts_ver_raw=$( rpm -q --queryformat=%{VERSION} initscripts )
+initscripts_ver_maj=$( echo $initscripts_ver_raw | cut -d . -f 1 ) ## 8
+initscripts_ver_min=$( echo $initscripts_ver_raw | cut -d . -f 2 ) ## 03
+initscripts_ver_pt=$(  echo $initscripts_ver_raw | cut -d . -f 3 ) ## 42
+initscripts_ver=$(( (initscripts_ver_maj * 10000) + (initscripts_ver_min * 100) + initscripts_ver_pt ))
+
+if [ $initscripts_ver -lt 84531 ]; then
+    echo $"initscripts $initscripts_ver_raw too old for $prog"
+    exit 0
+fi
+
+# pull in sysconfig settings
+[ -e /etc/sysconfig/${prog} ] && . /etc/sysconfig/${prog}
+
+export GOMAXPROCS=${GOMAXPROCS:-2}
+
+SPOOL_SIZE=${SPOOL_SIZE:-100}
+FROM_BEGINNING=${FROM_BEGINNING:-true}
+
+start() {
+    [ -x $exec ] || exit 5
+    
+    [ -f $conffile ] || exit 6
+
+    umask 077
+
+    echo -n $"Starting $prog: "
+    
+    ## holy shell shenanigans, batman!
+    ## go can't be properly daemonized.  we need the pid of the spawned process.
+    ## you can't do "cmd &; action" but you can do "{ cmd & }; action".
+    daemon \
+        --pidfile=$pidfile \
+        " { ${exec} -config=${conffile} -from-beginning=${FROM_BEGINNING} -spool-size ${SPOOL_SIZE} >> ${logfile} 2>&1 & } ; echo \$! >| $pidfile "
+    
+    RETVAL=$?
+    
+    if [ $RETVAL -eq 0 ]; then
+        touch $lockfile
+    fi
+    
+    echo    
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    
+    killproc -p $pidfile $prog
+    RETVAL=$?
+
+    if [ $RETVAL -eq 0 ]; then
+        rm -f $lockfile $pidfile
+    fi
+
+    echo
+    return $RETVAL
+}
+
+restart() {
+    stop
+    start
+}
+
+force_reload() {
+    restart
+}
+
+rh_status() {
+    if [ $initscripts_ver -ge 89900 ]; then
+        status -p "$pidfile" -l $prog $exec
+    else
+        ## status doesn't support -l
+        status -p "$pidfile" $exec
+    fi
+    
+    RETVAL=$?
+    
+    return $RETVAL
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    force-reload)
+        force_reload
+        ;;
+    status)
+        rh_status
+        ;;
+    condrestart|try-restart)
+        rh_status_q || exit 0
+        restart
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|force-reload}"
+        exit 2
+esac
+
+exit $?

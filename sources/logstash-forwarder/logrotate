@@ -1,0 +1,9 @@
+/var/log/logstash-forwarder.log {
+    daily
+    dateext
+    rotate 5
+    missingok
+    notifempty
+    copytruncate
+    compress
+}
