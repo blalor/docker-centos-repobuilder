@@ -12,6 +12,7 @@ basedir=$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 [ -d ${basedir}/rpms ] || mkdir -p ${basedir}/rpms
 
 docker run \
+    --rm \
     -v ${basedir}:/scripts \
     -v ${basedir}/rpms:/rpms \
     -e AWS_ACCESS_KEY \
