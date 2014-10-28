@@ -31,7 +31,7 @@ pkg_exists_in_repo python-graphite-web-${graphite_ver} || fpm -s python -t rpm -
 ## my docker-sync stuff
 ## deps are a bit fucked up; epel provides PyYAML-3.10 and fpm doesn't have an
 ## option to remove an item from the list of automatic dependencies
-docker_sync_ver="1.0.3"
+docker_sync_ver="1.1.0"
 pkg_exists_in_repo python-docker-sync-${docker_sync_ver} || \
     fpm -s python \
         -t rpm \
@@ -41,6 +41,8 @@ pkg_exists_in_repo python-docker-sync-${docker_sync_ver} || \
         -d 'python-argparse >= 1.1' \
         -d 'python-docker-py >= 0.3.0' \
         -d 'python-docker-py < 0.4.0' \
+        -d 'python-semantic_version >= 2.3.1' \
+        -d 'python-semantic_version < 2.4.0' \
         -d 'python-setuptools' \
         -v ${docker_sync_ver} \
         docker-sync
@@ -48,3 +50,4 @@ pkg_exists_in_repo python-docker-sync-${docker_sync_ver} || \
 pkg_exists_in_repo python-docker-py-0.3.1         || fpm -s python -t rpm -v 0.3.1  docker-py
 pkg_exists_in_repo python-websocket-client-0.11.0 || fpm -s python -t rpm -v 0.11.0 websocket-client
 pkg_exists_in_repo python-requests-2.2.1          || fpm -s python -t rpm -v 2.2.1  requests
+pkg_exists_in_repo python-semantic_version-2.3.1  || fpm -s python -t rpm -v 2.3.1  semantic_version
