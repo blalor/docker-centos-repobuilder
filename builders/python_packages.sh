@@ -9,8 +9,14 @@ set -x
 ## totally manual.  This script reflects that state, but there's probably a
 ## better way…
 
-## supervisor requires meld3, available in epel repo
-pkg_exists_in_repo python-supervisor-3.0 || fpm -s python -t rpm -v 3.0 supervisor
+## supervisor requires meld3, available in epel repo.  no declared dependency on
+## setuptools, but won't start without it.
+pkg_exists_in_repo python-supervisor-3.1.3 || \
+    fpm -s python \
+        -t rpm \
+        -v 3.1.3 \
+        -d python-setuptools \
+        supervisor
 
 ## pip requires setuptools, available in base repo
 pkg_exists_in_repo python-pip-1.4.1 || fpm -s python -t rpm -v 1.4.1 pip
