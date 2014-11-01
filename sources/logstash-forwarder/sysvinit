@@ -28,8 +28,8 @@ prog="logstash-forwarder"
 exec="/usr/bin/${prog}"
 pidfile="/var/run/${prog}.pid"
 lockfile="/var/lock/subsys/${prog}"
-logfile="/var/log/${prog}"
-conffile="/etc/${prog}.json"
+logfile="/var/log/${prog}.log"
+confdir="/etc/${prog}.d"
 
 ## determine if we have a sane 'daemon' function; < 8.45.31 doesn't pass
 ## environment vars. wtf?!
@@ -47,26 +47,31 @@ fi
 # pull in sysconfig settings
 [ -e /etc/sysconfig/${prog} ] && . /etc/sysconfig/${prog}
 
-export GOMAXPROCS=${GOMAXPROCS:-2}
+export GOMAXPROCS=${GOMAXPROCS:-$( nproc )}
 
-SPOOL_SIZE=${SPOOL_SIZE:-100}
-FROM_BEGINNING=${FROM_BEGINNING:-true}
+SPOOL_SIZE=${SPOOL_SIZE:-1024}
 
 start() {
     [ -x $exec ] || exit 5
+    [ -d $confdir ] || exit 6
     
-    [ -f $conffile ] || exit 6
-
+    ## lsf doesn't specify a path for its state file, just uses cwd. yes, really.
+    [ -d /var/lib/logstash-forwarder ] || mkdir /var/lib/logstash-forwarder
+    cd /var/lib/logstash-forwarder
+    
     umask 077
 
     echo -n $"Starting $prog: "
+    
+    ## logging to syslog doesn't work, so we're still using a logfile.
+    ## https://github.com/elasticsearch/logstash-forwarder/issues/279
     
     ## holy shell shenanigans, batman!
     ## go can't be properly daemonized.  we need the pid of the spawned process.
     ## you can't do "cmd &; action" but you can do "{ cmd & }; action".
     daemon \
         --pidfile=$pidfile \
-        " { ${exec} -config=${conffile} -from-beginning=${FROM_BEGINNING} -spool-size ${SPOOL_SIZE} >> ${logfile} 2>&1 & } ; echo \$! >| $pidfile "
+        " { ${exec} -config=${confdir} -spool-size ${SPOOL_SIZE} >> ${logfile} 2>&1 & } ; echo \$! >| $pidfile "
     
     RETVAL=$?
     

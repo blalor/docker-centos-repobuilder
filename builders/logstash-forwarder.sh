@@ -9,7 +9,7 @@ tmpdir=$( mktemp -d )
 trap "echo removing ${tmpdir}; rm -rf ${tmpdir}" EXIT
 
 PKG_NAME="logstash-forwarder"
-PKG_ITER="1"
+PKG_ITER="2"
 
 ## https://github.com/elasticsearch/logstash-forwarder/pull/285
 ## https://github.com/elasticsearch/logstash-forwarder/pull/154
@@ -18,8 +18,8 @@ REPO="https://github.com/elasticsearch/logstash-forwarder.git"
 
 SOURCES_DIR="${SOURCES}/${PKG_NAME}"
 
-if pkg_exists_in_repo ${PKG_NAME}-${PKG_VER}; then
-    echo "${PKG_NAME}-${PKG_VER} already built"
+if pkg_exists_in_repo ${PKG_NAME}-${PKG_VER}-${PKG_ITER}; then
+    echo "${PKG_NAME}-${PKG_VER}-${PKG_ITER} already built"
 else
     destdir=${PWD}
     
@@ -50,7 +50,7 @@ else
         ${SOURCES_DIR}/sysvinit=/etc/rc.d/init.d/logstash-forwarder \
         ${SOURCES_DIR}/logrotate=/etc/logrotate.d/logstash-forwarder
     
-    mv "${PKG_NAME}-${PKG_VER}-1.x86_64.rpm" ${destdir}/
+    mv "${PKG_NAME}-${PKG_VER}-${PKG_ITER}.x86_64.rpm" ${destdir}/
     
     popd
 fi
