@@ -12,8 +12,9 @@ PKG_NAME="logstash-forwarder"
 PKG_ITER="1"
 
 ## https://github.com/elasticsearch/logstash-forwarder/pull/285
-PKG_VER="e9c0173" 
-REPO="https://github.com/blalor/logstash-forwarder.git"
+## https://github.com/elasticsearch/logstash-forwarder/pull/154
+PKG_VER="0632ce3" 
+REPO="https://github.com/elasticsearch/logstash-forwarder.git"
 
 SOURCES_DIR="${SOURCES}/${PKG_NAME}"
 
@@ -27,10 +28,9 @@ else
     
     git checkout ${PKG_VER}
     
+    ## requires golang 1.3, which is now in epel (as of 2014-Oct-31)
     ## https://github.com/elasticsearch/logstash-forwarder/issues/226
-    yum localinstall -y /rpms/golang13-*.rpm
-    export GOROOT="/opt/golang13"
-    export PATH="${GOROOT}/bin:${PATH}"
+    yum install -y golang
     
     ## doesn't set the epoch; necessary when using a non-semantic version
     # make VERSION=${PKG_VER} rpm
@@ -44,8 +44,6 @@ else
         --iteration ${PKG_ITER} \
         --epoch $( git log --format=format:'%ct' --max-count=1 ${PKG_VER} ) \
         --replaces lumberjack \
-        --exclude '*.a' \
-        --exclude 'lib/pkgconfig/zlib.pc' \
         --description "a log shipping tool" \
         --url "https://github.com/elasticsearch/logstash-forwarder" \
         build/bin/logstash-forwarder=/usr/bin/ \
