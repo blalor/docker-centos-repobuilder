@@ -34,5 +34,6 @@ else
     OPTS="--target ${PID} --mount --uts --ipc --net --pid --"
 
     # Use env to clear all host environment variables and set then anew
-    "${NSENTER}" ${OPTS} env -i - ${ENV} ${COMMAND}
+    # carry along TERM, so pagers, etc, will work
+    "${NSENTER}" ${OPTS} env -i ${ENV} TERM=${TERM} ${COMMAND}
 fi
