@@ -57,3 +57,15 @@ pkg_exists_in_repo python-docker-py-0.3.1         || fpm -s python -t rpm -v 0.3
 pkg_exists_in_repo python-websocket-client-0.11.0 || fpm -s python -t rpm -v 0.11.0 websocket-client
 pkg_exists_in_repo python-requests-2.2.1          || fpm -s python -t rpm -v 2.2.1  requests
 pkg_exists_in_repo python-semantic_version-2.3.1  || fpm -s python -t rpm -v 2.3.1  semantic_version
+
+## awscli and friends
+pkg_exists_in_repo python-awscli-1.6.5     || fpm -s python -t rpm -v 1.6.5  awscli
+pkg_exists_in_repo python-bcdoc-0.12.2     || fpm -s python -t rpm -v 0.12.2 bcdoc
+pkg_exists_in_repo python-botocore-0.76.0  || fpm -s python -t rpm -v 0.76.0 botocore
+pkg_exists_in_repo python-colorama-0.2.5   || fpm -s python -t rpm -v 0.2.5  colorama
+pkg_exists_in_repo python-dateutil-2.3     || fpm -s python -t rpm -v 2.3    python-dateutil
+pkg_exists_in_repo python-docutils-0.12    || fpm -s python -t rpm -v 0.12   docutils
+pkg_exists_in_repo python-jmespath-0.5.0   || fpm -s python -t rpm -v 0.5.0  jmespath
+pkg_exists_in_repo python-pyasn1-0.1.7     || fpm -s python -t rpm -v 0.1.7  pyasn1
+pkg_exists_in_repo python-rsa-3.1.2        || fpm -s python -t rpm -v 3.1.2  rsa
+pkg_exists_in_repo python-simplejson-3.3.0 || fpm -s python -t rpm -v 3.3.0  simplejson
