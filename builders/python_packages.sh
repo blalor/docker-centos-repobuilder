@@ -37,8 +37,11 @@ pkg_exists_in_repo python-graphite-web-${graphite_ver} || fpm -s python -t rpm -
 ## my docker-sync stuff
 ## deps are a bit fucked up; epel provides PyYAML-3.10 and fpm doesn't have an
 ## option to remove an item from the list of automatic dependencies
-docker_sync_ver="1.1.0"
-pkg_exists_in_repo python-docker-sync-${docker_sync_ver} || \
+## it also won't even fucking start if mock 1.0.1 isn't installed, even though
+## that's not a dependency that's actually used at runtime.
+docker_sync_ver="1.2.3"
+docker_sync_iter="1"
+pkg_exists_in_repo python-docker-sync-${docker_sync_ver}-${docker_sync_iter} || \
     fpm -s python \
         -t rpm \
         --no-auto-depends \
@@ -50,9 +53,12 @@ pkg_exists_in_repo python-docker-sync-${docker_sync_ver} || \
         -d 'python-semantic_version >= 2.3.1' \
         -d 'python-semantic_version < 2.4.0' \
         -d 'python-setuptools' \
+        -d 'python-mock == 1.0.1' \
         -v ${docker_sync_ver} \
+        --iteration ${docker_sync_iter} \
         docker-sync
 
+pkg_exists_in_repo python-mock-1.0.1              || fpm -s python -t rpm -v 1.0.1  mock
 pkg_exists_in_repo python-docker-py-0.3.1         || fpm -s python -t rpm -v 0.3.1  docker-py
 pkg_exists_in_repo python-websocket-client-0.11.0 || fpm -s python -t rpm -v 0.11.0 websocket-client
 pkg_exists_in_repo python-requests-2.2.1          || fpm -s python -t rpm -v 2.2.1  requests
